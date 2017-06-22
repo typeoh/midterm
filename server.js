@@ -52,8 +52,12 @@ app.get("/register",(req,res)=>{
 
 app.post("/user_registration",(req,res)=>{
   console.log(req.body.username);
-  knex('users').count("*").where('username',req.body.username).then((result)=>{
-    res.json(result);
+  knex('users').count("*").where('username',req.body.username).orWhere('email',req.body.email).then((result)=>{
+    if(Number(result[0].count)>0){
+      console.log("Can't register");
+    }else{
+      console.log(req.body);
+    }
   })
 });
 
