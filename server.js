@@ -45,6 +45,11 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+//User registration page
+app.get("/register",(req,res)=>{
+  res.render("../public/pages/register.ejs");
+})
+
 app.listen(PORT, () => {
   console.log("Example app listening on port " + PORT);
 });
