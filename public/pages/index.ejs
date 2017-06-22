@@ -1,85 +1,28 @@
 <!DOCTYPE html>
-
 <html lang="en">
-  <head>
-
-    <style>
-
-    main{
-      width: 80%;
-      margin: auto;
-    }
-
-    main section div {
-      border: 1px solid black;
-      width: 300px;
-      height: 300px;
-      background-color: tomato;
-    }
-    main .input-section input {
-      width: 600px;
-      height: 50px;
-    }
-    main .top-section {
-      width: 705px;
-      height: 300px;
-      margin: 50px 0px 50px 0px;
-      border: 1px solid black;
-      text-align: center;
-    }
-
-    main .top-section div {
-      display: inline-block;
-
-
-    }
-
-    main .bottom-section {
-      width: 705px;
-      height: 300px;
-      margin-top: 50px;
-      border: 1px solid black;
-      text-align: center;
-    }
-
-    main .bottom-section div {
-      display: inline-block;
-
-    }
-
-    main .input-section{
-      margin-top: 50px;
-
-    }
-    .input-section > button{
-      height: 50px;
-      width: 100px;
-    }
-    </style>
-
+   <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../styles/layout.css">
   </head>
 
   <body>
-    <!-- header -->
-
     <main>
-
-      <section class="top-section">
+      <section class="eat-watch-section">
         <div>Eat</div>
         <div style="margin-left:97px";>Watch</div>
       </section>
 
       <section class="input-section">
-        <input name="tasks" type="text" />
-        <button>SUBMIT</button>
+        <form method="POST" action="/">
+          <input name="tasks" class="text-for-tasks" type="text"  placeholder="Enter task here!!" />
+          <button>SUBMIT</button>
+        </form>
       </section>
 
-      <section class="bottom-section">
+      <section class="read-buy-section">
          <div>Read</div>
         <div style="margin-left:97px;">Buy</div>
       </section>
-
     </main>
-
   </body>
 </html>
