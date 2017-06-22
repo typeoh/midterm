@@ -55,7 +55,11 @@ app.use("/api/tasks", tasksRoutes(knex));
 
 // Home page
 app.get("/", (req, res) => {
-  res.render("index");
+  if (req.session.username) {
+    res.render("../public/pages/index.ejs");
+  } else {
+    res.render("../public/pages/register.ejs");
+  }
 });
 
 //User registration page
