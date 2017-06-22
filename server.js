@@ -57,6 +57,7 @@ app.get("/register",(req,res)=>{
 });
 
 //User login page
+//If username exists redirects to 
 app.get("/login",(req,res)=>{
   res.render("../public/pages/register.ejs");
 });
@@ -76,7 +77,7 @@ app.post("/user_registration",(req,res) => {
   });
 });
 app.post("/user_login", (req, res) => {
-  knex.select("*").where(username,req.body.username).then((result) => {
+  knex.select("*").where('username',req.body.username).then((result) => {
     if (bcrypt.compareSync(req.body.password,result[0].password)) {
       res.redirect("/");
     } else {
