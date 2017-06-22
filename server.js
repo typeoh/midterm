@@ -13,10 +13,12 @@ const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
+const bcrypt = require('bcrypt');
 
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
 const tasksRoutes = require("./routes/tasks");
+
 
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.
@@ -40,6 +42,7 @@ app.use(express.static("public"));
 app.use("/api/users", usersRoutes(knex));
 app.use("/api/tasks", tasksRoutes(knex));
 
+
 // Home page
 app.get("/", (req, res) => {
   res.render("index");
@@ -50,15 +53,25 @@ app.get("/register",(req,res)=>{
   res.render("../public/pages/register.ejs");
 });
 
+//User login page
+app.get("/login",(req,res)=>{
+  res.render("../public/pages/register.ejs");
+});
+
+app.post("/user_login",(req,res)=>{
+
+});
+
 app.post("/user_registration",(req,res)=>{
-  console.log(req.body.username);
   knex('users').count("*").where('username',req.body.username).orWhere('email',req.body.email).then((result)=>{
     if(Number(result[0].count)>0){
-      console.log("Can't register");
+      res.status(403).send('Error: User email or username already exists! Please select a new one!');
     }else{
-      console.log(req.body);
+      knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,10)}).then((result)=>{
+        res.redirect("/");
+      });
     }
-  })
+  });
 });
 
 app.listen(PORT, () => {
