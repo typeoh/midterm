@@ -1,3 +1,4 @@
+/*All users from users table*/
 $(() => {
   $.ajax({
     method: "GET",
@@ -10,6 +11,7 @@ $(() => {
     }
   });;
 })
+/*All tasks from tasks table*/
 $(() => {
   $.ajax({
     method: "GET",
@@ -17,7 +19,6 @@ $(() => {
   }).done((tasks) => {
     for(task of tasks) {
       $("<div>").text(task.category).appendTo($("body"));
-      console.log(task)
     }
   });;
 });
