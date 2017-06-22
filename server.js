@@ -14,6 +14,7 @@ const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
 const bcrypt = require('bcrypt');
+const cookieSession = require("cookie-session");
 
 
 const salt=10;
@@ -27,6 +28,12 @@ const tasksRoutes = require("./routes/tasks");
 // 'dev' = Concise output colored by response status for development use.
 //         The :status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.
 app.use(morgan('dev'));
+
+
+//Set up secret key for cookie session
+app.use(cookieSession({
+    secret: 'Vancouver downtown',
+}))
 
 // Log knex SQL queries to STDOUT as well
 app.use(knexLogger(knex));
@@ -57,7 +64,7 @@ app.get("/register",(req,res)=>{
 });
 
 //User login page
-//If username exists redirects to 
+//If username exists redirects to
 app.get("/login",(req,res)=>{
   res.render("../public/pages/register.ejs");
 });
@@ -77,8 +84,8 @@ app.post("/user_registration",(req,res) => {
   });
 });
 //Login page
-//When user submits correct username / pass compares input to database 
-//If it matches - redirects to root 
+//When user submits correct username / pass compares input to database
+//If it matches - redirects to root
 app.post("/user_login", (req, res) => {
   knex.select("*").from('users').where('username', req.body.username).then((result) => {
     if (bcrypt.compareSync(req.body.password,result[0].password)) {
