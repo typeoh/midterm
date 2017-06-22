@@ -48,7 +48,14 @@ app.get("/", (req, res) => {
 //User registration page
 app.get("/register",(req,res)=>{
   res.render("../public/pages/register.ejs");
-})
+});
+
+app.post("/user_registration",(req,res)=>{
+  console.log(req.body.username);
+  knex('users').count("*").where('username',req.body.username).then((result)=>{
+    res.json(result);
+  })
+});
 
 app.listen(PORT, () => {
   console.log("Example app listening on port " + PORT);
