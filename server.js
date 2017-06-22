@@ -76,8 +76,11 @@ app.post("/user_registration",(req,res) => {
     }
   });
 });
+//Login page
+//When user submits correct username / pass compares input to database 
+//If it matches - redirects to root 
 app.post("/user_login", (req, res) => {
-  knex.select("*").from('users').where('username',req.body.username).then((result) => {
+  knex.select("*").from('users').where('username', req.body.username).then((result) => {
     if (bcrypt.compareSync(req.body.password,result[0].password)) {
       res.redirect("/");
     } else {
