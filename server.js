@@ -77,7 +77,7 @@ app.post("/user_registration",(req,res) => {
   });
 });
 app.post("/user_login", (req, res) => {
-  knex.select("*").where('username',req.body.username).then((result) => {
+  knex.select("*").from('users').where('username',req.body.username).then((result) => {
     if (bcrypt.compareSync(req.body.password,result[0].password)) {
       res.redirect("/");
     } else {
