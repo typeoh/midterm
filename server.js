@@ -15,6 +15,9 @@ const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
 const bcrypt = require('bcrypt');
 
+
+const salt=10;
+
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
 const tasksRoutes = require("./routes/tasks");
@@ -58,16 +61,13 @@ app.get("/login",(req,res)=>{
   res.render("../public/pages/register.ejs");
 });
 
-app.post("/user_login",(req,res)=>{
-
-});
 
 app.post("/user_registration",(req,res)=>{
   knex('users').count("*").where('username',req.body.username).orWhere('email',req.body.email).then((result)=>{
     if(Number(result[0].count)>0){
       res.status(403).send('Error: User email or username already exists! Please select a new one!');
     }else{
-      knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,10)}).then((result)=>{
+      knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,salt)}).then((result)=>{
         res.redirect("/");
       });
     }
