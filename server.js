@@ -61,19 +61,29 @@ app.get("/login",(req,res)=>{
   res.render("../public/pages/register.ejs");
 });
 
-
-app.post("/user_registration",(req,res)=>{
-  knex('users').count("*").where('username',req.body.username).orWhere('email',req.body.email).then((result)=>{
+//User Registration page
+//If username exists returns status 403 and error message
+//Otherwise, adds user to users table in database
+app.post("/user_registration",(req,res) => {
+  knex('users').count("*").where('username',req.body.username).orWhere('email',req.body.email).then((result) => {
     if(Number(result[0].count)>0){
       res.status(403).send('Error: User email or username already exists! Please select a new one!');
-    }else{
-      knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,salt)}).then((result)=>{
+    } else {
+      knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,salt)}).then((result) => {
         res.redirect("/");
       });
     }
   });
 });
-
+app.post("/user_login", (req, res) => {
+  knex.select("*").where(username,req.body.username).then((result) => {
+    if (bcrypt.compareSync(req.body.password,result[0].password)) {
+      res.redirect("/");
+    } else {
+      res.status(403).send("The username or password incorrect");
+    }
+  })
+});
 app.listen(PORT, () => {
   console.log("Example app listening on port " + PORT);
 });
