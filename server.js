@@ -78,6 +78,7 @@ app.post("/user_registration",(req,res) => {
       res.status(403).send('Error: User email or username already exists! Please select a new one!');
     } else {
       knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,salt)}).then((result) => {
+        req.session.username = req.body.username;
         res.redirect("/");
       });
     }
