@@ -13,7 +13,7 @@ const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
-const bcrypt = require('bcrypt');
+const bcrypt      = require('bcrypt');
 const cookieSession = require("cookie-session");
 
 
@@ -63,22 +63,33 @@ app.use("/api/classes", classesRoutes(knex));
 */
 app.get("/", (req, res) => {
   if (req.session.username) {
-    res.render("../public/pages/index.ejs");
+    knex('tasks').orderBy('id', 'desc').first('id', 'content').then((result) => {
+      let latest = result.content;
+      let templateVars = {
+        latest: latest
+      };
+      res.render("index", templateVars);
+    });
   } else {
-    res.render("../public/pages/register.ejs");
+    res.render("register");
   }
 });
 
 //User registration page
 app.get("/register",(req,res)=>{
-  res.render("../public/pages/register.ejs");
+  res.render("register");
 });
 
 //User login page
 //If username exists redirects to
 app.get("/login",(req,res)=>{
-  res.render("../public/pages/register.ejs");
+  res.render("register.ejs");
 });
+
+// app.get("/eatcategory", (req, res) => {
+// //   res.render("../")
+
+// })
 
 //User Registration page
 //If username exists returns status 403 and error message
