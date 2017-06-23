@@ -22,6 +22,9 @@ const salt=10;
 // Seperated Routes for each Resource
 const usersRoutes = require("./routes/users");
 const tasksRoutes = require("./routes/tasks");
+const classesRoutes = require("./routes/classes");
+
+let bayesModel=require("./public/scripts/classifier.js").bayesModel;
 
 
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
@@ -51,7 +54,7 @@ app.use(express.static("public"));
 // Mount all resource routes
 app.use("/api/users", usersRoutes(knex));
 app.use("/api/tasks", tasksRoutes(knex));
-
+app.use("/api/classes", classesRoutes(knex));
 
 /*
 * GET request for root
@@ -97,6 +100,12 @@ app.post("/user_registration",(req,res) => {
 app.post("/user_login", (req, res) => {
   knex.select("*").from('users').where('username', req.body.username).then((result) => {
     if (bcrypt.compareSync(req.body.password,result[0].password)) {
+      knex.select("*").from('taskClasses').then((data)=>{
+        for(var i=0;i<data.length;i++){
+          let tempTask=data[i];
+          bayesModel.learn(tempTask.task,tempTask.class);
+        }
+      })
       req.session.username = req.body.username;
       res.redirect("/");
     } else {
@@ -114,6 +123,7 @@ app.post("/new_task",(req,res)=>{
   if(req.session.username){
     knex.select('id').from('users').where('username',req.session.username).then((result)=>{
       knex('tasks').insert({category:"eat",content:req.body.task,date:new Date(),users_id:result[0].id}).then((result)=>{
+        console.log("The task "+req.body.task+" is classified as "+bayesModel.categorize(req.body.task));
         res.redirect("/");
       });
     })
