@@ -65,23 +65,28 @@ app.get("/", (req, res) => {
       let templateVars = {
         latest: latest
       };
-      res.render("../public/pages/index.ejs", templateVars);
+      res.render("index", templateVars);
     });
   } else {
-    res.render("../public/pages/register.ejs");
+    res.render("register");
   }
 });
 
 //User registration page
 app.get("/register",(req,res)=>{
-  res.render("../public/pages/register.ejs");
+  res.render("register");
 });
 
 //User login page
 //If username exists redirects to
 app.get("/login",(req,res)=>{
-  res.render("../public/pages/register.ejs");
+  res.render("register.ejs");
 });
+
+// app.get("/eatcategory", (req, res) => {
+// //   res.render("../")
+
+// })
 
 //User Registration page
 //If username exists returns status 403 and error message
