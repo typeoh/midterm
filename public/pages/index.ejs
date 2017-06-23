@@ -2,7 +2,8 @@
 <html lang="en">
    <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="../public/styles/layout.css">
+    <link rel="stylesheet" type="text/css" href="../styles/layout.css">
+    <%include ../partials/_header.ejs%>
   </head>
 
   <body>
@@ -13,8 +14,8 @@
       </section>
 
       <section class="input-section">
-        <form method="POST" action="/">
-          <input name="tasks" class="text-for-tasks" type="text"  placeholder="Enter task here!!" />
+        <form method="POST" action="/new_task">
+          <input name="task" class="text-for-task" type="text"  placeholder="Enter task here!!" />
           <button>SUBMIT</button>
         </form>
       </section>

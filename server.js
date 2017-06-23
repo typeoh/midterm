@@ -53,7 +53,11 @@ app.use("/api/users", usersRoutes(knex));
 app.use("/api/tasks", tasksRoutes(knex));
 
 
-// Home page
+/*
+* GET request for root
+* If logged in, render the page with the 4 lists
+* If not logged in, render the register page
+*/
 app.get("/", (req, res) => {
   if (req.session.username) {
     res.render("../public/pages/index.ejs");
@@ -94,13 +98,38 @@ app.post("/user_login", (req, res) => {
   knex.select("*").from('users').where('username', req.body.username).then((result) => {
     if (bcrypt.compareSync(req.body.password,result[0].password)) {
       req.session.username = req.body.username;
-      console.log("fuck"+req.session.username);
       res.redirect("/");
     } else {
       res.status(403).send("The username or password incorrect");
     }
   })
 });
+
+/*
+* POST request for adding a new task
+* If logged in, add task to tasks table in database midterm
+* If not logged in, send error to remind user to login first
+*/
+app.post("/new_task",(req,res)=>{
+  if(req.session.username){
+    knex.select('id').from('users').where('username',req.session.username).then((result)=>{
+      knex('tasks').insert({category:"eat",content:req.body.task,date:new Date(),users_id:result[0].id}).then((result)=>{
+        res.redirect("/");
+      });
+    })
+  }else{
+    res.status(403).send("Please login first before you can add a task");
+  }
+})
+
+app.post("/logout",(req,res)=>{
+  req.session=null;
+  // res.clearCookie(req.session.user_id);
+  // res.clearCookie('session');
+  // res.clearCookie("session.sig");
+  res.redirect("/");
+})
+
 app.listen(PORT, () => {
   console.log("Example app listening on port " + PORT);
 });
