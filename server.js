@@ -23,6 +23,7 @@ const salt=10;
 const usersRoutes = require("./routes/users");
 const tasksRoutes = require("./routes/tasks");
 const classesRoutes = require("./routes/classes");
+const userRegistrationRoutes=require("./routes/userRegistration");
 
 let bayesModel=require("./public/scripts/classifier.js").bayesModel;
 
@@ -55,6 +56,7 @@ app.use(express.static("public"));
 app.use("/api/users", usersRoutes(knex));
 app.use("/api/tasks", tasksRoutes(knex));
 app.use("/api/classes", classesRoutes(knex));
+app.use("/user_registration",userRegistrationRoutes(knex));
 
 /*
 * GET request for root
@@ -91,26 +93,12 @@ app.get("/login",(req,res)=>{
 
 // })
 
-//User Registration page
-//If username exists returns status 403 and error message
-//Otherwise, adds user to users table in database
-app.post("/user_registration",(req,res) => {
-  knex('users').count("*").where('username',req.body.username).orWhere('email',req.body.email).then((result) => {
-    if(Number(result[0].count)>0){
-      res.status(403).send('Error: User email or username already exists! Please select a new one!');
-    } else {
-      knex('users').insert({username:req.body.username,email:req.body.email, password:bcrypt.hashSync(req.body.password,salt)}).then((result) => {
-        res.redirect("/");
-      });
-    }
-  });
-});
 //Login page
 //When user submits correct username / pass compares input to database
 //If it matches - redirects to root
 app.post("/user_login", (req, res) => {
   knex.select("*").from('users').where('username', req.body.username).then((result) => {
-    if (bcrypt.compareSync(req.body.password,result[0].password)) {
+    if (bcrypt.compare(req.body.password,result[0].password,salt,null)) {
       knex.select("*").from('taskClasses').then((data)=>{
         for(var i=0;i<data.length;i++){
           let tempTask=data[i];
@@ -133,7 +121,8 @@ app.post("/user_login", (req, res) => {
 app.post("/new_task",(req,res)=>{
   if(req.session.username){
     knex.select('id').from('users').where('username',req.session.username).then((result)=>{
-      knex('tasks').insert({category:"eat",content:req.body.task,date:new Date(),users_id:result[0].id}).then((result)=>{
+      let tempClass=bayesModel.categorize(req.body.task);
+      knex('tasks').insert({category:tempClass,content:req.body.task,date:new Date(),users_id:result[0].id}).then((result)=>{
         console.log("The task "+req.body.task+" is classified as "+bayesModel.categorize(req.body.task));
         res.redirect("/");
       });
@@ -145,9 +134,6 @@ app.post("/new_task",(req,res)=>{
 
 app.post("/logout",(req,res)=>{
   req.session=null;
-  // res.clearCookie(req.session.user_id);
-  // res.clearCookie('session');
-  // res.clearCookie("session.sig");
   res.redirect("/");
 })
 
