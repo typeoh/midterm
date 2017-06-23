@@ -13,7 +13,7 @@ const knexConfig  = require("./knexfile");
 const knex        = require("knex")(knexConfig[ENV]);
 const morgan      = require('morgan');
 const knexLogger  = require('knex-logger');
-const bcrypt = require('bcrypt');
+const bcrypt      = require('bcrypt');
 const cookieSession = require("cookie-session");
 
 
@@ -60,7 +60,13 @@ app.use("/api/tasks", tasksRoutes(knex));
 */
 app.get("/", (req, res) => {
   if (req.session.username) {
-    res.render("../public/pages/index.ejs");
+    knex('tasks').orderBy('id', 'desc').first('id', 'content').then((result) => {
+      let latest = result.content;
+      let templateVars = {
+        latest: latest
+      };
+      res.render("../public/pages/index.ejs", templateVars);
+    });
   } else {
     res.render("../public/pages/register.ejs");
   }
@@ -114,6 +120,7 @@ app.post("/new_task",(req,res)=>{
   if(req.session.username){
     knex.select('id').from('users').where('username',req.session.username).then((result)=>{
       knex('tasks').insert({category:"eat",content:req.body.task,date:new Date(),users_id:result[0].id}).then((result)=>{
+
         res.redirect("/");
       });
     })
